@@ -8,7 +8,7 @@ You must have CookieCutter installed.
 
 Provide the URL to the Mercurial repository to create a templated project in the current directory:
 
-        $ cookiecutter hg+ssh://hg@bitbucket.org/wackyratt/tiny-snek
+        $ cookiecutter bb:wackyratt/tiny-snek
 
 Follow the prompts, or press `ENTER` to accept the default values.
 
