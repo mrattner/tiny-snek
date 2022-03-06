@@ -38,3 +38,4 @@ setup(name="{{ cookiecutter.module_name }}",
     },
     include_package_data=True,
     zip_safe=False)
+

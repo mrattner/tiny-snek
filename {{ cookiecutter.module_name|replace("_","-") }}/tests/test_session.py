@@ -18,3 +18,4 @@ class SessionTest(unittest.TestCase):
 
 class ExampleTest(SessionTest):
     pass
+

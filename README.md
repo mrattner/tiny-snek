@@ -6,12 +6,13 @@ Named in honor of [Tiny Snek Comics](https://www.instagram.com/tinysnekcomics/) 
 
 You must have CookieCutter installed.
 
-Provide the URL to the Mercurial repository to create a templated project in the current directory:
+Provide the URL to the Git repository to create a templated project in the current directory:
 
-        $ cookiecutter bb:wackyratt/tiny-snek
+        $ cookiecutter gh:mrattner/tiny-snek
 
 Follow the prompts, or press `ENTER` to accept the default values.
 
 ## Known issues
 
 This template is not compatible with Windows because it uses the pipe character `|` in a directory name.
+

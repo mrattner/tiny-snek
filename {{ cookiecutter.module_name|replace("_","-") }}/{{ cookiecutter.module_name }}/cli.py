@@ -5,3 +5,4 @@ import click
 def cli():
     """Default entry point when running the {{ cookiecutter.module_name|replace('_','-') }} command."""
     click.echo("Hello World")
+

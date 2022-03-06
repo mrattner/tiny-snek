@@ -13,3 +13,4 @@ def __main__(environment):
     """Re-runs the ORM schema creation on the database in the given environment."""
     Db.init(environment, echo=True)
     Base.metadata.create_all(Db.engine)
+

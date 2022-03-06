@@ -16,3 +16,4 @@ if __name__ == "__main__":
         remove_file(MODULE, "models.py")
         remove_file(MODULE, "database.py")
         remove_file(MODULE, "create_db.py")
+
