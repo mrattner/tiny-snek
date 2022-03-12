@@ -4,7 +4,7 @@ Named in honor of [Tiny Snek Comics](https://www.instagram.com/tinysnekcomics/) 
 
 ## Using the template
 
-You must have CookieCutter installed.
+You must have [CookieCutter](https://cookiecutter.readthedocs.io/en/latest/) installed.
 
 Provide the URL to the Git repository to create a templated project in the current directory:
 

@@ -16,24 +16,31 @@ setup(name="{{ cookiecutter.module_name }}",
     author_email="{{ cookiecutter.author_email }}",
     license="MIT",
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
+    python_requires=">=3.8",
     install_requires=[
-        {%- if cookiecutter.use_database == "y" %}
+        {%- if cookiecutter.interface == "gui" %}
+        "pysimplegui",
+        {%- endif %}
+        {%- if cookiecutter.use_database|lower == "y" %}
         "sqlalchemy",
         {%- endif %}
-        {%- if cookiecutter.include_cli == "y" or cookiecutter.use_database == "y" %}
-        "click",
+        {%- if cookiecutter.interface == "cli" or cookiecutter.use_database|lower == "y" %}
+        "typer",
         {%- endif %}
     ],
     entry_points={
         "console_scripts": [
-            {%- if cookiecutter.include_cli|lower == "y" %}
-            "{{ cookiecutter.module_name|replace('_','-') }} = {{ cookiecutter.module_name }}.cli:cli",
+            {%- if cookiecutter.interface == "cli" %}
+            "{{ cookiecutter.module_name|replace('_','-') }} = {{ cookiecutter.module_name }}:main",
             {%- endif %}
             {%- if cookiecutter.use_database|lower == "y" %}
-            "initdb = {{ cookiecutter.module_name }}.create_db:__main__",
+            "initdb = {{ cookiecutter.module_name }}.create_db:main",
             {%- endif %}
         ],
         "gui_scripts": [
+            {%- if cookiecutter.interface == "gui" %}
+            "{{ cookiecutter.module_name|replace('_','-') }} = {{ cookiecutter.module_name }}:main"
+            {%- endif %}
         ]
     },
     include_package_data=True,

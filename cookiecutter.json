@@ -1,9 +1,10 @@
 {
     "project_name": "Tiny Snek",
-    "use_database": "y",
-    "include_cli": "y",
+    "module_name": "{{ cookiecutter.project_name|lower|replace(' ', '_') }}",
+    "interface": ["cli", "gui"],
+    "use_database": "n",
+    "use_pytest": "n",
     "author": "M. Rattner",
-    "author_email": "mrattner42@outlook.com",
-    "module_name": "{{ cookiecutter.project_name|lower|replace(' ', '_') }}"
+    "author_email": "mrattner42@outlook.com"
 }
 

@@ -2,7 +2,7 @@ import unittest
 
 from {{ cookiecutter.module_name }}.database import Database as Db
 
-class SessionTest(unittest.TestCase):
+class TestSession(unittest.TestCase):
     """Base class for a database integration test."""
 
     def setUp(self):
