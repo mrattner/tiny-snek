@@ -2,7 +2,7 @@ import unittest
 
 from {{ cookiecutter.module_name }}.database import Database as Db
 
-class SessionTest(unittest.TestCase):
+class TestSession(unittest.TestCase):
     """Base class for a database integration test."""
 
     def setUp(self):
@@ -16,6 +16,6 @@ class SessionTest(unittest.TestCase):
         self.transaction.rollback()
         self.connection.close()
 
-class ExampleTest(SessionTest):
+class ExampleTest(TestSession):
     pass
 
