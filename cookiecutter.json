@@ -6,5 +6,16 @@
     "use_database": "n",
     "use_pytest": "n",
     "author": "M. Rattner",
-    "author_email": "mrattner42@outlook.com"
+    "author_email": "mrattner42@outlook.com",
+    "__prompts__": {
+        "project_name": "Project name",
+        "module_name": "Python module name",
+        "use_database": "Add a SQLite database to the project?",
+        "use_pytest": "Use Pytest for tests instead of unittest?",
+        "interface": {
+            "__prompt__": "Select project type",
+            "cli": "CLI application",
+            "gui": "Graphical application"
+        }
+    }
 }
