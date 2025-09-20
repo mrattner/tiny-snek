@@ -11,8 +11,3 @@ Provide the URL to the Git repository to create a templated project in the curre
         $ cookiecutter gh:mrattner/tiny-snek
 
 Follow the prompts, or press `ENTER` to accept the default values.
-
-## Known issues
-
-This template is not compatible with Windows because it uses the pipe character `|` in a directory name.
-
