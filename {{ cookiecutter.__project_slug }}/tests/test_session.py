@@ -2,6 +2,7 @@ import unittest
 
 from {{ cookiecutter.module_name }}.database import Database as Db
 
+
 class TestSession(unittest.TestCase):
     """Base class for a database integration test."""
 
@@ -16,6 +17,6 @@ class TestSession(unittest.TestCase):
         self.transaction.rollback()
         self.connection.close()
 
+
 class ExampleTest(TestSession):
     pass
-
