@@ -1,67 +1,93 @@
-# Developing
-[Pipenv](https://pipenv.pypa.io/en/latest/advanced/#pipfile-vs-setuppy) handles
-the creation of virtual environments and management of package dependencies,
-including development dependencies.
+# Development guide for {{ cookiecutter.project_name }}
 
-## Using the virtual environment
-For easier execution of Python, open a shell in Pipenv's virtual environment:
-```bash
-pipenv shell
+## Tooling
+
+[`uv`][uv] handles the creation of Python virtual environments and management of
+package dependencies, including development dependencies.
+
+A [Justfile][just] is provided for convenience to be used as a command runner,
+with the following recipes:
+
+- `just lint`: Run the linter in auto-fix mode
+- `just format`: Run the auto-formatter in write mode
+- `just test`: Run all tests
+- `just start`: Launch the main Python program as a script
+
+Without Just, you can 'just' run the commands invoked by these recipes.
+
+### Using the virtual environment
+
+To activate a Python virtual environment in your shell:
+
+```sh
+source <venv-location>/bin/activate
 ```
+
 While the virtual environment is activated, you can use the `python` command as
 though you were completely isolated from other Python installations on the
-system.
+system. When done using the virtual environment, execute `exit` to return your
+path to normal.
 
-When done using the virtual environment, execute `exit` to return your path to
-normal.
+`uv` automatically creates a Python virtual environment `.venv`; all its
+commands operate within the virtual environment regardless of whether it's been
+activated. You can use `uv run` for executing local Python scripts and commands
+from packages that have been installed in the virtual environment.
 
-## Installing dependencies
-To install any missing packages for the current project, or to add packages as
-development dependencies, run `pipenv install` in the top-level project
-directory. Add the `--dev` flag for development-only dependencies. The Pipfile
-will be updated automatically.
+### Installing dependencies
 
-To specify new build dependencies for your package, modify the `setup.py` list
-of `install_requires` to include the new package name. Specify the name only,
-rather than a particular version. Then run `pipenv install -e .` to install your
-application in development mode.
-[Read more](https://pipenv.pypa.io/en/latest/advanced/#pipfile-vs-setuppy)
-about the difference between `Pipfile` and `setup.py`.
+Install all dependencies, including dev dependencies, with `uv sync`. Extraneous
+packages are removed and the lockfile gets updated as well.
 
-## Defining app entry points
-{%- if cookiecutter.interface == "cli" %}
-Once the project has been installed in development mode, command line scripts
-will be available from `setup.py`'s entry\_points array under the
-"console\_scripts" section.
-{%- elif cookiecutter.interface == "gui" %}
-Once the project has been installed in development mode, the script to launch
-the application will be available from `setup.py`'s entry\_points array under
-the "gui\_scripts" section. Add any command-line scripts that should ship with
-the package to the "console\_scripts" section.
-{%- endif %}
+To add external packages as dependencies, run `uv add` in the top-level project
+directory. Add the `--dev` flag for development-only dependencies.
 
-# Testing
-## Running tests
-To run all the tests in the project, execute:
-```bash
-pipenv run test
+If your project is to be packaged into a distribution/wheel, [`uv build`][build]
+can be configured to build and publish it. Also change `uv`'s configured
+[package mode][uvpkg] in `pyproject.toml`:
+
+```toml
+[tool.uv]
+package = false # <-- Remove this line
 ```
+
+### Running project executables
+
+The `just start` recipe runs the module's entry-point script defined in
+`__main__.py`. You can run other local scripts in the context of the virtual
+environment the same way, via `uv run <...>`
+
+## Testing
+
+### Running tests
+
+To run all the tests in the project, execute the `just test` recipe.
+
 For more detailed results, include the `-v` flag. To run only the tests whose
 names match a particular pattern, use the `-k` option.
 
-## Writing tests
+### Writing tests
+
 1. Every test filename must start with the string "test" and be a valid Python
-module name (e.g. use underscores instead of hyphens).
+   module name (e.g. use underscores instead of hyphens).
 2. Test methods must start with the string "test" to be discovered by the test
-runner.
-{%- if cookiecutter.use_pytest|lower == "y" %}
+   runner.
+{%- if cookiecutter.use_pytest %}
 3. Test class names should start with `Test` or be a descendant of the class
 `unittest.TestCase` to be collected by default.
-4. See the [`pytest` docs](https://docs.pytest.org) for details of how to group
-tests into suites and how to use `pytest`'s other features.
+4. See the [`pytest` docs][pytest] for details of how to group tests into suites
+   and how to use `pytest`'s other features.
 {%- else %}
 3. Test classes must be a descendant of the class `unittest.TestCase`.
-4. To group tests together, create a
-[test suite](https://docs.python.org/3/library/unittest.html#grouping-tests).
+4. To group tests together, create a [test suite][unittest].
 {%- endif %}
 
+[uv]: https://docs.astral.sh/uv/reference/cli
+[just]: https://just.systems/man/en/quick-start.html
+[ruff]: https://docs.astral.sh/ruff/configuration/#full-command-line-interface
+[build]: https://docs.astral.sh/uv/concepts/build-backend/#using-the-uv-build-backend
+[uvpkg]: https://docs.astral.sh/uv/reference/settings/#package
+{%- if cookiecutter.use_pytest %}
+[pytest]: https://docs.pytest.org
+{%- else %}
+[unittest]: https://docs.python.org/3/library/unittest.html#grouping-tests
+{%- endif %}

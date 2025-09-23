@@ -1,33 +1,61 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "{{ cookiecutter.__project_slug }}"
+version = "0.1.0"
+description = "{{ cookiecutter.project_description }}"
+readme = "README.rst"
+requires-python = ">=3.12"
+dependencies = [
+{%- if cookiecutter.use_database %}
+    "sqlalchemy==1.4.32",
+{%- endif %}
+{%- if cookiecutter.interface == "gui" %}
+    "pysimplegui>=5.0.8.3",
+{% endif %}
+{%- if cookiecutter.interface == "cli" or cookiecutter.use_database %}
+    "typer>=0.19.1",
+{%- endif %}
+]
 
-[tool.black]
-include = '\.pyi?$'
-line-length = 88
-target-version = ["py38"]
+[tool.uv]
+package = false
 
-[tool.flakeheaven]
-format = "colored"
-max_line_length = 88
+[tool.ruff.format]
+docstring-code-format = true
 
-[tool.flakeheaven.plugins]
-"flake8-*" = ["+*"]
-# Naming the value being returned helps clarify code
-flake8-return = ["-R504"]
-mccabe = ["+*"]
-pep8-naming = ["+*"]
-# Turn off pycodestyle rules that conflict with Black
-pycodestyle = ["+*", "-E203", "-E501"]
-pyflakes = ["+*"]
-pylint = ["+*"]
+[tool.ruff.lint]
+explicit-preview-rules = true
+select = [
+    # See https://docs.astral.sh/ruff/rules/ for full list of available rules
+    "ERA", "YTT", "ASYNC", "S", "BLE", "FBT", "B", "A", "C4", "DTZ", "EM",
+    "EXE", "ISC", "ICN", "LOG", "G", "INP", "PIE", "PYI", "Q004", "RET", "SIM",
+    "SLOT", "TC", "ARG", "PTH", "FLY", "I", "N", "PERF", "E", "W", "D", "F",
+    "PLC", "PLE", "PLR", "PLW", "UP", "FURB", "RUF", "TRY",
+{%- if cookiecutter.use_pytest %}
 
-[tool.isort]
-multi_line_output = 10
-profile = "black"
-skip_glob = ["*.md", "*.json"]
-src_paths = ["{{ cookiecutter.module_name }}", "tests"]
-{%- if cookiecutter.use_pytest|lower == "y" %}
+    # 3rd-party package specific
+    "PT",   # Pytest
+{%- endif %}
+]
+
+ignore = [
+    # See https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191", "E111", "E114", "E117", "D206", "D300", "Q000", "Q001", "Q002",
+    "Q003", "COM812", "COM819", "E501",
+
+    # Named return values are useful for self-documenting their meaning
+    "RET504",
+    # Requiring docstrings is overkill for a baby project
+    "D10", "D401"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/test_*.py" = ["D"]
+
+# For plugin-specific tweaking options, see https://docs.astral.sh/ruff/settings/#lint
+[tool.ruff.lint.pydocstyle]
+# See https://www.pydocstyle.org/en/stable/error_codes.html#default-conventions
+convention = "pep257"
+{%- if cookiecutter.use_pytest %}
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"
@@ -35,3 +63,10 @@ empty_parameter_set_mark = "xfail"
 testpaths = ["tests"]
 {%- endif %}
 
+[dependency-groups]
+dev = [
+{%- if cookiecutter.use_pytest %}
+    "pytest>=8.4.2",
+{% endif %}
+    "ruff>=0.13.1",
+]

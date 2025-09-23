@@ -1,9 +1,8 @@
-{%- if cookiecutter.interface == "cli" %}
+{% if cookiecutter.interface == "cli" -%}
 import typer
 
 
 def main():
-    """Default entry point when running the {{ cookiecutter.module_name|replace('_','-') }} command."""
     typer.echo("Hello World")
 
 
@@ -35,4 +34,3 @@ def main():
 if __name__ == "__main__":
     main()
 {%- endif %}
-
