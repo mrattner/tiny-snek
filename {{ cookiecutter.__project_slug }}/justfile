@@ -1,0 +1,20 @@
+lint:
+    uv run ruff check --fix {{ cookiecutter.module_name }}/ tests/
+
+test:
+{%- if cookiecutter.use_pytest %}
+    uv run pytest
+{%- else %}
+    uv run -m unittest discover -s tests/ -b
+{%- endif %}
+
+format:
+    uv run ruff format
+
+start:
+    uv run -m {{ cookiecutter.module_name }}
+{%- if cookiecutter.use_database %}
+
+initdb:
+    uv run -m {{ cookiecutter.module_name }}.create_db
+{%- endif %}
