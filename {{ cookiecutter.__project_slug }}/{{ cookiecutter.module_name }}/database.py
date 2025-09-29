@@ -1,70 +1,32 @@
 import configparser
-from contextlib import contextmanager
+import logging
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
-from sqlalchemy.event import listen
-from sqlalchemy.orm import sessionmaker
-
-config = configparser.ConfigParser()
-config.read("settings.ini")
 
 
-def set_sqlite_pragma(dbapi_connection):
-    """Enable the checking of foreign key constraints on a SQLite connection."""
+@event.listens_for(Engine, "connect")
+def _set_sqlite_pragma(dbapi_connection, _):
+    """Emit PRAGMA statement automatically for all new connections.
+
+    See https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#foreign-key-support
+    """
+    ac_setting = dbapi_connection.autocommit
+    dbapi_connection.autocommit = True
+
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
+    dbapi_connection.autocommit = ac_setting
 
-class Database:
-    engine = None
-    create_session = None
 
-    @classmethod
-    def init(cls, *, environment="DEFAULT", echo=False):
-        """Provide a SQLAlchemy engine for the database in the given environment."""
-        dialect = config.get(environment, "dialect")
-        driver = config.get(environment, "driver")
-        username = config.get(environment, "username")
-        password = config.get(environment, "password")
-        host = config.get(environment, "hostname")
-        port = config.get(environment, "port")
-        database = config.get(environment, "database")
+def get_db(settings_filepath):
+    """Provide a SQLAlchemy engine from the given database settings."""
+    config = configparser.ConfigParser()
+    config.read(settings_filepath)
+    db_filename = config.get("Database", "SqliteFile")
+    log_level = config.get("Database", "LogLevel")
 
-        url = "{dialect}{driver}://{username}{password}{host}{port}/{database}".format(
-            dialect=dialect,
-            driver=("+" + driver if driver else ""),
-            username=username,
-            password=(":" + password if password else ""),
-            host=("@" + host if host else ""),
-            port=(":" + port if port else ""),
-            database=database,
-        )
-
-        Database.engine = create_engine(url, echo=echo)
-        Database.create_session = sessionmaker(bind=Database.engine)
-
-        if dialect == "sqlite":
-            listen(Engine, "connect", set_sqlite_pragma)
-
-    @classmethod
-    @contextmanager
-    def session_scope(cls):
-        """Provide a transactional scope around a series of operations.
-
-        See http://docs.sqlalchemy.org/en/rel_1_1/orm/session_basics.html
-        """
-        if not Database.create_session:
-            msg = "Must initialize engine before creating session"
-            raise RuntimeError(msg)
-
-        session = Database.create_session()
-        try:
-            yield session
-            session.commit()
-        except:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+    logging.getLogger("sqlalchemy.engine").setLevel(log_level)
+    return create_engine(f"sqlite:///{db_filename}", connect_args={"autocommit": False})

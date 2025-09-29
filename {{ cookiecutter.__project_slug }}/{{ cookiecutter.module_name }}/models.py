@@ -1,25 +1,93 @@
-"""Defines the schema and relationships of the application objects."""
+"""Defines the schema and relationships of the database objects.
 
-from enum import Enum
+For more information, see https://docs.sqlalchemy.org/en/20/tutorial/metadata.html
+"""
 
-from sqlalchemy import Column, Integer
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy.types import Enum as SqlEnum
+import enum
+from datetime import UTC, datetime
+from uuid import uuid4
 
-Base = declarative_base()
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    MetaData,
+    String,
+    Table,
+    UniqueConstraint,
+    Uuid,
+)
+from sqlalchemy import (
+    Enum as SqlEnum,
+)
 
 
-class ExampleEnum(Enum):
-    """You can define simple sets of enumerated values as Python enums rather than a table."""
+class Tier(enum.Enum):
+    """Tier of an organization."""
 
-    pass
+    Basic = enum.auto()
+    Pro = enum.auto()
+    Enterprise = enum.auto()
 
 
-class ExampleEntity(Base):
-    """Classes represent single-entity tables.
+class Role(enum.Enum):
+    """Role of a user's membership in an organization."""
 
-    See http://docs.sqlalchemy.org/en/rel_1_1/orm/extensions/declarative/basic_use.html
-    """
+    User = enum.auto()
+    Admin = enum.auto()
 
-    __tablename__ = "ExampleEntity"
+
+_metadata_obj = MetaData(schema="main")
+
+organization = Table(
+    "organization",
+    _metadata_obj,
+    Column("id", Uuid, primary_key=True, default=uuid4),
+    Column("tier", SqlEnum(Tier), nullable=False, default=Tier.Basic),
+    Column(
+        "created",
+        DateTime(timezone=True),
+        nullable=False,
+        default=datetime.now(tz=UTC),
+    ),
+    Column("name", String(100), nullable=False),
+    Column("prefix", String(4), nullable=False, unique=True),
+)
+
+user = Table(
+    "user",
+    _metadata_obj,
+    Column("id", Uuid, primary_key=True, default=uuid4),
+    Column(
+        "created",
+        DateTime(timezone=True),
+        nullable=False,
+        default=datetime.now(tz=UTC),
+    ),
+    Column("name", String(100), nullable=False),
+    Column("email", String(100), nullable=False, unique=True),
+    Column("active", Boolean, nullable=False, default=True),
+)
+
+membership = Table(
+    "membership",
+    _metadata_obj,
+    Column("id", Uuid, primary_key=True, default=uuid4),
+    Column(
+        "created",
+        DateTime(timezone=True),
+        nullable=False,
+        default=datetime.now(tz=UTC),
+    ),
+    Column("org_id", Uuid, ForeignKey("organization.id"), nullable=False),
+    Column("user_id", Uuid, ForeignKey("user.id"), nullable=False),
+    Column("role", SqlEnum(Role), nullable=False, default=Role.User),
+    UniqueConstraint("org_id", "user_id", name="u_membership"),
+)
+
+
+def init_schema(binding):
+    """Emits DDL statements to the given engine or connection to drop and re-create all database objects."""
+    _metadata_obj.drop_all(binding)
+    _metadata_obj.create_all(binding)

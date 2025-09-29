@@ -15,6 +15,6 @@ start:
     uv run -m {{ cookiecutter.module_name }}
 {%- if cookiecutter.use_database %}
 
-initdb:
-    uv run -m {{ cookiecutter.module_name }}.create_db
+initdb SETTINGS_FILE:
+    uv run -m {{ cookiecutter.module_name }}.create_db --settings {{SETTINGS_FILE}}
 {%- endif %}

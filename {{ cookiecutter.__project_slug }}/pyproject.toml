@@ -6,7 +6,7 @@ readme = "README.rst"
 requires-python = ">=3.12"
 dependencies = [
 {%- if cookiecutter.use_database %}
-    "sqlalchemy==1.4.32",
+    "sqlalchemy>=2.0.43",
 {%- endif %}
 {%- if cookiecutter.interface == "gui" %}
     "pysimplegui>=5.0.8.3",
