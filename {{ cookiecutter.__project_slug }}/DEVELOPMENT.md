@@ -40,6 +40,16 @@ packages are removed and the lockfile gets updated as well.
 
 To add external packages as dependencies, run `uv add` in the top-level project
 directory. Add the `--dev` flag for development-only dependencies.
+{%- if cookiecutter.interface == "gui" %}
+
+In the case where `tkinter` isn't already present in the virtual environment,
+delete the `.venv` folder and have `uv` reinstall Python:
+
+```sh
+rm -rf .venv
+uv python install --reinstall 3.12
+```
+{% endif %}
 
 If your project is to be packaged into a distribution/wheel, [`uv build`][build]
 can be configured to build and publish it. Also change `uv`'s configured
