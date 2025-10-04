@@ -16,7 +16,7 @@ FONT = ("Helvetica", 12)
 
 
 class App(tk.Tk):
-    def __init__(self):
+    def __init__(self) -> None:
         tk.Tk.__init__(self)
         tk.Tk.wm_title(self, "{{ cookiecutter.project_name }}")
         self.__set_window_geometry(400, 600)
@@ -26,7 +26,7 @@ class App(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.__frames = {}
+        self.__frames: dict[type[tk.Frame], tk.Frame] = {}
 
         for cls in (StartPage, PageOne, PageTwo):
             frame = cls(container, self)
@@ -35,7 +35,7 @@ class App(tk.Tk):
 
         self.show_frame(StartPage)
 
-    def __set_window_geometry(self, width, height):
+    def __set_window_geometry(self, width: int, height: int) -> None:
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
@@ -43,13 +43,13 @@ class App(tk.Tk):
         y = (screen_height / 2) - (height / 2)
         self.geometry(f"{width}x{height}+{x:.0f}+{y:.0f}")
 
-    def show_frame(self, cont):
+    def show_frame(self, cont: type[tk.Frame]) -> None:
         frame = self.__frames[cont]
         frame.tkraise()
 
 
 class StartPage(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent: tk.Frame, controller: App) -> None:
         tk.Frame.__init__(self, parent)
 
         label = ttk.Label(self, text="Start Page", font=FONT)
@@ -67,7 +67,7 @@ class StartPage(tk.Frame):
 
 
 class PageOne(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent: tk.Frame, controller: App) -> None:
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Page One", font=FONT)
         label.pack(pady=10, padx=10)
@@ -84,7 +84,7 @@ class PageOne(tk.Frame):
 
 
 class PageTwo(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent: tk.Frame, controller: App):
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Page Two", font=FONT)
         label.pack(pady=10, padx=10)

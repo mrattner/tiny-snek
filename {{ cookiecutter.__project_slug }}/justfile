@@ -1,5 +1,8 @@
 lint:
     uv run ruff check --fix {{ cookiecutter.module_name }}/ tests/
+{%- if cookiecutter.enforce_types %}
+    uv run mypy .
+{%- endif %}
 
 test:
 {%- if cookiecutter.use_pytest %}

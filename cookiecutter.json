@@ -4,6 +4,7 @@
     "__project_slug": "{{ cookiecutter.project_name|lower|replace(' ', '-') }}",
     "interface": ["cli", "gui"],
     "project_description": "I don't do a whole lot yet.",
+    "enforce_types": true,
     "use_database": false,
     "use_pytest": false,
     "__prompts__": {
@@ -12,6 +13,7 @@
         "project_description": "Project description",
         "use_database": "Add a SQLite database to the project?",
         "use_pytest": "Use Pytest for tests instead of unittest?",
+        "enforce_types": "Add mypy type checking?",
         "interface": {
             "__prompt__": "Select project type",
             "cli": "CLI application",
